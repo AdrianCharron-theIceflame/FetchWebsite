@@ -1,0 +1,61 @@
+<!doctype html>
+<html xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882">
+
+<head>
+    <title>Test Add</title>
+
+    <!--[if gte mso 9]><xml>
+<mso:CustomDocumentProperties>
+<mso:display_urn_x003a_schemas-microsoft-com_x003a_office_x003a_office_x0023_Editor msdt:dt="string">Adewole Adewumi</mso:display_urn_x003a_schemas-microsoft-com_x003a_office_x003a_office_x0023_Editor>
+<mso:Order msdt:dt="string">6140200.00000000</mso:Order>
+<mso:display_urn_x003a_schemas-microsoft-com_x003a_office_x003a_office_x0023_Author msdt:dt="string">Adewole Adewumi</mso:display_urn_x003a_schemas-microsoft-com_x003a_office_x003a_office_x0023_Author>
+<mso:ContentTypeId msdt:dt="string">0x010100E940DCEB12F1B74BB4C78279C22A4348</mso:ContentTypeId>
+</mso:CustomDocumentProperties>
+</xml><![endif]-->
+</head>
+
+<body>
+    <input type="button" value="Send" name="theBtn">
+
+    <script>
+        let newData = {
+            "id": 1,
+            "first_name": "Allan",
+            "last_name": "McDonald",
+            "username": "mpurslow2",
+            "email": "mpurslow2@barnesandnoble.com",
+            "enrolled": "1111/11/11",
+            "avatar": "https://robohash.org/inavel.jpg?size=60x60&set=set1",
+            "wins": 21,
+            "losses": 55,
+            "games_played": [{
+                "game": "uno",
+                "date": "2020/02/28"
+            }, {
+                "game": "dominoes",
+                "date": "2020/08/02"
+            }, {
+                "game": "coup",
+                "date": "2020/09/12"
+            }]
+        }
+
+
+        async function postData(url, data) {
+            const resp = await fetch(url, {
+                method: 'post',
+                body: JSON.stringify(data)
+            });
+            return resp.text();
+        }
+
+        let formName = document.querySelector("[type=button]");
+        formName.addEventListener('click', () => {
+            postData("./php/updateCount.php", newData)
+                .then(data => console.log(`I have returned: ${data}`));
+        })
+    </script>
+
+</body>
+
+</html>

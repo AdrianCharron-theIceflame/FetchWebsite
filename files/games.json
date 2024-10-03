@@ -1,0 +1,12 @@
+[{"id":1,"game":"battleship","type":"board"},
+{"id":2,"game":"cribbage","type":"card"},
+{"id":3,"game":"hearts","type":"card"},
+{"id":4,"game":"uno","type":"card"},
+{"id":5,"game":"crazy8s","type":"card"},
+{"id":6,"game":"chess","type":"strategy"},
+{"id":7,"game":"checkers","type":"board"},
+{"id":8,"game":"connect4","type":"board"},
+{"id":9,"game":"war","type":"card"},
+{"id":10,"game":"mancala","type":"strategy"},
+{"id":11,"game":"backgammon","type":"strategy"},
+{"id":12,"game":"dominoes","type":"other"}]
