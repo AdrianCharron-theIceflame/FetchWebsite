@@ -1,0 +1,137 @@
+@import url("https://fonts.googleapis.com/css2?family=Aldrich&family=Source+Sans+3&display=swap");
+
+* {
+    box-sizing: border-box;
+}
+
+:root {
+    --titleFontFamily: Aldrich, sans-serif;
+    --fontFamily: "Source Sans 3", sans-serif;
+    --mainBorderRadius: 10px;
+    --yellow: #ffec11;
+    --blue: #1be7ff;
+    --textColour: #ba2d0b;
+    --grey: #757575;
+    --border: 1px solid var(--black);
+    --black: black;
+    --white: white;
+    --red: #d10000;
+}
+
+body {
+    font-family: var(--fontFamily);
+    background-color: var(--black);
+    color: var(--blue);
+}
+
+h1 {
+    font-family: var(--titleFontFamily);
+    color: var(--blue);
+    font-size: 1.5em;
+}
+
+header p {
+    color: var(--yellow);
+    font-family: var(--titleFontFamily);
+}
+
+section{
+    margin-block-end: 3vb;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    margin-inline: 10%;
+    padding: 1vi;
+    border: var(--border);
+    border-radius: var(--mainBorderRadius);
+    background-color: var(--yellow);
+    color: var(--textColour);
+}
+
+input {
+    color: var(--blue);
+    background-color: var(--black);
+    font-size: 1em;
+}
+
+input[type="submit"] {
+    margin-block-start: .7em;
+}
+
+span.err {
+    color: var(--red);
+    font-size: .7em;
+    padding-bottom: .5em;
+    font-style: italic;
+    font-weight: bolder;
+}
+
+span.info {
+    font-size: .7em;
+    padding-bottom: .5em;
+}
+
+input.error {
+    border: 3px solid var(--red);
+}
+
+fieldset{
+    border: var(--textColour) solid 1px;
+    border-radius: var(--mainBorderRadius);
+}
+
+select {
+    color: var(--blue);
+    background-color: var(--black);
+}
+
+select:disabled {
+    background-color: var(--grey);
+    color: var(--black);
+}
+
+div#players{
+    overflow-x: scroll;
+}
+
+table, th, td{
+    border: var(--textColour) 3px solid;
+}
+
+table{
+    border-collapse: collapse;
+    border-radius: var(--mainBorderRadius);
+    margin-inline: auto;
+    inline-size: 100%;
+}
+
+td, th{
+    padding-inline: .5em;
+}
+
+th{
+    text-align: left;
+}
+
+td{
+    text-align: right;
+    padding-block: 0;
+}
+
+
+td ul {
+    text-align:left;
+    margin-block: 1vb;
+}
+
+section#error{
+    margin-inline: 25%;
+    text-align: center;
+    border: var(--textColour) solid 5px;
+    background-color: var(--yellow);
+    color: var(--red);
+    font-weight: bolder;
+    font-family: var(--titleFontFamily);
+}

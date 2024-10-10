@@ -1,11 +1,16 @@
 "use strict";
 const games = new Array(0);
-const gamePlayersMain = document.querySelector(`main`);
+const gamePlayersDiv = document.querySelector(`#players`);
 const players = new Array(0);
 const playerTable = document.createElement(`table`);
-const tableHeader = document.createElement(`tr`);
-const headers = [`Avatar: `, `ID: `, `Name: `, `Username: `, `Enrolled: `, `Wins: `, `Losses: `];
+const headers = [`Avatar: `, `ID: `, `Name: `, `Username: `, `Email: `, `Enrolled: `, `Wins: `, `Losses: `, `Games Played: `];
+const sortBy = document.querySelector(`#sortBy`);
+const fieldSet = document.querySelector(`#gamesArray`);
+const selectElArr = new Array(0);
+const dateGameArr = new Array(0);
+const mainGamePlayers = document.querySelector(`main`);
 function appendHeaders() {
+    let tableHeader = document.createElement(`tr`);
     headers.forEach(header => {
         let th = document.createElement(`th`);
         th.textContent = header;
@@ -14,8 +19,8 @@ function appendHeaders() {
     });
     playerTable.appendChild(tableHeader);
 }
-window.addEventListener(`load`, async () => {
-    await fetch(`./files/games.json`, {
+window.addEventListener(`load`, () => {
+    fetch(`./files/games.json`, {
         method: `get`
     })
         .then(response => response.json())
@@ -23,13 +28,18 @@ window.addEventListener(`load`, async () => {
         data.forEach((el) => {
             games.push(new Game(el.id, el.game, el.type));
         });
-        // console.table(games)
-        // Game.getGameTypes().forEach(el => console.log(el))
+        displaySortByOptions();
+        addSelectField(0);
     })
         .catch(e => {
-        location.assign(`./gamesNotFound.html`);
+        console.log(`games.json Error: ${e}`);
+        mainGamePlayers.innerHTML = `
+                <section id="error">
+                    <h2>There was an error when fetching the file of games.</h2>
+                    <p>Please contact a website administrator.</p>
+                </section>`;
     });
-    await fetch(`./files/players.json`, {
+    fetch(`./files/players.json`, {
         method: `get`
     })
         .then(response => response.json())
@@ -44,8 +54,7 @@ window.addEventListener(`load`, async () => {
             let avatar = el.avatar;
             let wins = el.wins;
             let losses = el.losses;
-            let games_played;
-            games_played = new Array(0);
+            let games_played = new Array(0);
             if (el.games_played instanceof Array) {
                 el.games_played.forEach((gameEl) => {
                     let gamePlayed = "";
@@ -63,7 +72,6 @@ window.addEventListener(`load`, async () => {
                     });
                 });
             }
-            // TODO: Line 740 has an error
             else {
                 let gamePlayed = ``;
                 try {
@@ -79,20 +87,117 @@ window.addEventListener(`load`, async () => {
                     date: datePlayed
                 });
             }
+            games_played.sort((a, b) => {
+                if (a.game.getName().localeCompare(b.game.getName()) != 0)
+                    return a.game.getName().localeCompare(b.game.getName());
+                else {
+                    return b.date.getTime() - a.date.getTime();
+                }
+            });
             // console.table(games_played)
             // console.log(enrolled)
+            for (let i = 1; i < games_played.length; i++) {
+                if (games_played[i].game.getName() == games_played[i - 1].game.getName()) {
+                    games_played.splice(i, 1);
+                }
+            }
             players.push(new Player(id, firstName, lastName, username, email, enrolled, avatar, wins, losses, games_played));
         });
         sortPlayersByName();
         postPlayers(players);
-        console.table(players);
-        gamePlayersMain.appendChild(playerTable);
+        // console.table(players)
+        gamePlayersDiv.appendChild(playerTable);
     })
         .catch(e => {
-        // TODO: make an error page for missing
-        console.log(e);
+        console.log(`players.json Error: ${e}`);
+        mainGamePlayers.innerHTML = `
+                <section id="error">
+                    <h2>There was an error when fetching the file of players.</h2>
+                    <p>Please contact a website administrator.</p>
+                </section>`;
     });
 });
+sortBy.addEventListener(`change`, () => {
+    if (sortBy.value != `lastName`) {
+        let newPlayerArray = new Array(0);
+        players.forEach(play => {
+            play.getGamesPlayed().forEach((gam) => {
+                if (gam.game.getName() == sortBy.value)
+                    newPlayerArray.push(play);
+            });
+        });
+        postPlayers(newPlayerArray);
+    }
+    else
+        postPlayers(players);
+});
+let count = 0;
+function addSelectionField() {
+    if (count == 0)
+        count++;
+    if (count < games.length) {
+        addSelectField(count);
+    }
+    count++;
+}
+function gameOptions() {
+    let gameOptionsArr = new Array(0);
+    let gameNameArr = new Array(0);
+    games.sort((a, b) => a.getName().localeCompare(b.getName()));
+    for (let game of games) {
+        gameNameArr.push(game.getName());
+        for (let i = 0; i < count; i++) {
+            let select = document.querySelector(`#selectGame${i}`);
+            if (select.value == game.getName()) {
+                gameNameArr.splice(gameNameArr.indexOf(game.getName()), 1);
+            }
+        }
+    }
+    let option1 = document.createElement(`option`);
+    option1.textContent = `--Choose a Game--`;
+    option1.value = "";
+    gameOptionsArr.push(option1);
+    gameNameArr.forEach(game => {
+        let option = document.createElement(`option`);
+        option.value = game;
+        option.textContent = `${game}`;
+        // console.log(option.value)
+        gameOptionsArr.push(option);
+    });
+    return gameOptionsArr;
+}
+function addSelectField(i) {
+    let div = document.createElement(`div`);
+    let select = document.createElement(`select`);
+    let date = document.createElement(`input`);
+    date.id = `dateGame${i}`;
+    date.type = `date`;
+    select.id = `selectGame${i}`;
+    let gameOptionsArr = gameOptions();
+    gameOptionsArr.forEach(option => {
+        select.appendChild(option);
+    });
+    div.appendChild(select);
+    div.appendChild(date);
+    fieldSet.appendChild(div);
+    selectElArr.push(select);
+    dateGameArr.push(date);
+    select.addEventListener(`change`, addSelectionField);
+    select.addEventListener(`change`, validateSelects);
+    date.addEventListener(`change`, validateSelects);
+    if (i != 0) {
+        selectElArr[i - 1].removeEventListener(`change`, addSelectionField);
+        selectElArr[i - 1].setAttribute(`disabled`, ``);
+    }
+    // console.log(dateGameArr)
+}
+function displaySortByOptions() {
+    games.sort((a, b) => a.getName().localeCompare(b.getName()));
+    games.forEach(game => {
+        sortBy.innerHTML += `
+            <option value="${game.getName()}">${game.getName()}</option>`;
+    });
+}
 function createDate(dateString) {
     let date = new Date();
     date.setFullYear(Number(dateString.substring(0, 4)), Number(dateString.substring(5, 7)) - 1, Number(dateString.substring(8)));
@@ -115,9 +220,19 @@ function postPlayers(arr) {
             <td>${player.getId()}
             <td>${player.getFirstName()} ${player.getLastName()}</td>
             <td>${player.getUsername()}</td>
+            <td>${player.getEmail()}</td>
             <td>${player.getDayEnrolled().getFullYear()}/${player.getDayEnrolled().getMonth()}/${player.getDayEnrolled().getUTCDate()}
             <td>${player.getWins()}</td>
             <td>${player.getLosses()}</td>`;
+        let ul = document.createElement(`ul`);
+        player.getGamesPlayed().forEach(playerGame => {
+            ul.innerHTML += `
+                <li>${playerGame.game.getName()}<br>Last played on ${playerGame.date.getFullYear()}/${playerGame.date.getMonth() + 1}/${playerGame.date.getDate()}</li>`;
+            // console.log(playerGame.date)
+        });
+        let td = document.createElement(`td`);
+        td.appendChild(ul);
+        tr.appendChild(td);
         playerTable.appendChild(tr);
     });
 }
@@ -136,4 +251,21 @@ function sortPlayersByName() {
             return -1;
         }
     });
+}
+function validateSelects() {
+    gameErr.textContent = ``;
+    let ret = true;
+    if (selectElArr[0].value == ``) {
+        ret = false;
+        gameErr.textContent = `You must have played at least 1 game`;
+    }
+    for (let i = 0; i < count; i++) {
+        let today = new Date();
+        let date = createDate(dateGameArr[i].value);
+        if (!(today.getTime() - date.getTime() >= 0)) {
+            gameErr.textContent += `*Last time played cannot be in the furture`;
+            ret = false;
+        }
+    }
+    return ret;
 }
