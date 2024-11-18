@@ -135,3 +135,15 @@ section#error{
     font-weight: bolder;
     font-family: var(--titleFontFamily);
 }
+
+@media (min-width: 768px) {
+    form {
+        inline-size: 50vi;
+    }
+}
+
+@media (min-width: 1080px) {
+    form {
+        inline-size: 30vi;
+    }
+}
