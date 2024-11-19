@@ -8,8 +8,8 @@ class Player {
     private avatar: string
     private wins: number
     private losses: number
-    private gamesPlayed: Array<any>
-    constructor(id: number, firstName: string, lastName: string, username: string, email: string, dayEnrolled: Date, avatar: string, wins: number, losses: number, gamesPlayed: Array<any>) {
+    private gamesPlayed: { game: Game, date: Date }[]
+    constructor(id: number, firstName: string, lastName: string, username: string, email: string, dayEnrolled: Date, avatar: string, wins: number, losses: number, gamesPlayed: { game: Game, date: Date }[]) {
         this.id = id
         this.firstName = firstName
         this.lastName = lastName
@@ -48,7 +48,7 @@ class Player {
     public getLosses(): number {
         return this.losses
     }
-    public getGamesPlayed(): Array<any> {
+    public getGamesPlayed(): { game: Game, date: Date }[] {
         return this.gamesPlayed
     }
 }

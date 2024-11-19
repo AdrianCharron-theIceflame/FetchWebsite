@@ -1,24 +1,14 @@
 const games: Array<Game> = new Array(0)
 const gamePlayersDiv = document.querySelector(`#players`) as HTMLDivElement
 const players: Array<Player> = new Array(0)
-const playerTable: HTMLTableElement = document.createElement(`table`)
-const headers: Array<string> = [`Avatar: `, `ID: `, `Name: `, `Username: `, `Email: `, `Enrolled: `, `Wins: `, `Losses: `, `Games Played: `]
+const playerDiv: HTMLDivElement = document.createElement(`div`)
+playerDiv.id = `playerDiv`
 const sortBy = document.querySelector(`#sortBy`) as HTMLSelectElement
 const fieldSet = document.querySelector(`#gamesArray`) as HTMLFieldSetElement
 const selectElArr: Array<HTMLSelectElement> = new Array(0)
 const dateGameArr: Array<HTMLInputElement> = new Array(0)
 const mainGamePlayers = document.querySelector(`main`) as HTMLDivElement
 
-function appendHeaders() {
-    let tableHeader: HTMLTableRowElement = document.createElement(`tr`)
-    headers.forEach(header => {
-        let th: HTMLTableCellElement = document.createElement(`th`)
-        th.textContent = header
-        th.scope = `col`
-        tableHeader.appendChild(th)
-    })
-    playerTable.appendChild(tableHeader)
-}
 window.addEventListener(`load`, () => {
     fetch(`./files/games.json`, {
         method: `get`
@@ -94,8 +84,6 @@ window.addEventListener(`load`, () => {
                         return b.date.getTime() - a.date.getTime()
                     }
                 })
-                // console.table(games_played)
-                // console.log(enrolled)
                 for (let i = 1; i < games_played.length; i++) {
                     if (games_played[i].game.getName() == games_played[i - 1].game.getName()) {
                         games_played.splice(i, 1)
@@ -105,8 +93,7 @@ window.addEventListener(`load`, () => {
             })
             sortPlayersByName()
             postPlayers(players)
-            // console.table(players)
-            gamePlayersDiv.appendChild(playerTable)
+            gamePlayersDiv.appendChild(playerDiv)
         })
         .catch(e => {
             console.log(`players.json Error: ${e}`)
@@ -165,7 +152,6 @@ function gameOptions(): Array<HTMLOptionElement> {
         let option = document.createElement(`option`)
         option.value = game
         option.textContent = `${game}`
-        // console.log(option.value)
         gameOptionsArr.push(option)
     })
     return gameOptionsArr
@@ -194,7 +180,6 @@ function addSelectField(i: number) {
         selectElArr[i - 1].removeEventListener(`change`, addSelectionField)
         selectElArr[i - 1].setAttribute(`disabled`, ``)
     }
-    // console.log(dateGameArr)
 }
 
 function displaySortByOptions() {
@@ -220,30 +205,26 @@ function findGame(playerGame: string): Game {
 }
 
 function postPlayers(arr: Array<Player>) {
-    playerTable.innerHTML = ``
-    appendHeaders()
+    playerDiv.innerHTML = ``
     arr.forEach(player => {
-        let tr = document.createElement(`tr`)
-
-        tr.innerHTML = `
-            <td><img src="${player.getAvatar()}" alt="Player's avatar"></td>
-            <td>${player.getId()}
-            <td>${player.getFirstName()} ${player.getLastName()}</td>
-            <td>${player.getUsername()}</td>
-            <td>${player.getEmail()}</td>
-            <td>${player.getDayEnrolled().getFullYear()}/${player.getDayEnrolled().getMonth()}/${player.getDayEnrolled().getUTCDate()}
-            <td>${player.getWins()}</td>
-            <td>${player.getLosses()}</td>`
+        let section = document.createElement(`section`)
+        section.innerHTML = `
+            <p class="image"><img src="${player.getAvatar()}" alt="Player's avatar"></p>
+            <h3>Number ${player.getId()}: ${player.getFirstName()} ${player.getLastName()} &nbsp <span class="aka">aka</span> &nbsp ${player.getUsername()}</h3>
+            <p>Email: ${player.getEmail()}</p>
+            <p>Day joined: ${player.getDayEnrolled().getFullYear()}/${player.getDayEnrolled().getMonth()}/${player.getDayEnrolled().getUTCDate()}
+            <p>Number of wins: ${player.getWins()}</p>
+            <p>Number of losses: ${player.getLosses()}</p>`;
         let ul = document.createElement(`ul`)
         player.getGamesPlayed().forEach(playerGame => {
             ul.innerHTML += `
                 <li>${playerGame.game.getName()}<br>Last played on ${playerGame.date.getFullYear()}/${playerGame.date.getMonth() + 1}/${playerGame.date.getDate()}</li>`
-            // console.log(playerGame.date)
         })
-        let td = document.createElement(`td`)
-        td.appendChild(ul)
-        tr.appendChild(td)
-        playerTable.appendChild(tr)
+        let p = document.createElement(`p`)
+        p.innerHTML = `Games played:`
+        section.appendChild(p)
+        section.appendChild(ul)
+        playerDiv.appendChild(section)
     })
 }
 
